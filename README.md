@@ -12,6 +12,8 @@ namedroutes implements named routes for Compojure.
 
 ## Usage
 
+It's easiest to demonstrate this project's functionality with an example:
+
 	(ns example
 	  (:use [compojure.core]
 	        [namedroutes.routes]))
@@ -35,6 +37,62 @@ namedroutes implements named routes for Compojure.
 	(url-for wildcard-routes :foo "one" "two" "three/four")
 	; => [:post "/foo/one/two/three/four"]
 
+## API
+
+### `(defnamedroutes name keysroutes)`
+Like Compojure's `defroutes`, but creates named routes. Example:
+
+	(defnamedroutes users
+	  :index  (GET "/users" [] "SHOW INDEX")
+	  :new    (GET "/users/new" [] "NEW USER FORM")
+	  :show   (GET "/users/:id" [id] "SHOW USER")
+	  :edit   (GET "/users/:id/edit" [id] "EDIT USER")
+	  :create (POST "/users/" [& params] "CREATE NEW USER")
+	  :update (POST "/users/:id" [id & params] "UPDATE USER")
+	  :delete (POST "/users/:id" [id] "DELETE USER"))
+
+named urls can be retrieved using the `url-for' function:
+
+	(url-for 'users :show "my-user-id")
+	; => [:get "/users/my-user-id"]
+	
+### `(namedroutes keysroutes)`
+Like Compojure's `routes`, but creates named routes. Example:
+
+	(def x (namedroutes :foo (GET "/my/foo/:id" [id] "foo!")))
+	;=> ~'user/x
+
+### `(url-for routes action & args)`
+
+Returns a pair *[method url-string]* with the url specified by *routes*, *action*
+and any arguments the url needs. *routes* must be defined
+with `defnamedroutes`, which stores the url-resolving functions
+in it's meta.
+
+*routes* should be a routes datastructure as defined
+by `defnamedroutes`, a `var` bound to named routes, or a fully qualified `symbol` that
+can be resolved to a var bound to named routes.
+
+ Example:
+
+	(defnamedroutes users
+	  :index (GET "/users" [] (...))
+	  :edit (GET "/users/:id/edit [id] (...))
+	  :update (POST "/users/:id" [id & params] (...)))
+	
+	(url-for users :edit 3456)   ; => [:get "/users/3456/edit"]
+	(url-for users :update 3456) ; => [:post "/users/3456"]
+
+or, if you want to look up named routes without depending on the
+namespace that defined it (to avoid circular dependencies):
+
+	(url-for 'my-ns/users :edit 3456) ; => [:get "/users/3456/edit"] ;
+
+
+
+## Limitations
+
+Currently, namedroutes does not support Compojure's `context` (i.e. *nested routes*) macro, and it does not support routes combined with compojure's `routes`.
 
 ## License
 
