@@ -39,7 +39,7 @@ It's easiest to demonstrate this project's functionality with an example:
 
 ## API
 
-### `(defnamedroutes name keysroutes)`
+### defnamedroutes
 Like Compojure's `defroutes`, but creates named routes. Example:
 
 	(defnamedroutes users
@@ -56,13 +56,13 @@ named urls can be retrieved using the `url-for' function:
 	(url-for 'users :show "my-user-id")
 	; => [:get "/users/my-user-id"]
 	
-### `(namedroutes keysroutes)`
+### namedroutes
 Like Compojure's `routes`, but creates named routes. Example:
 
 	(def x (namedroutes :foo (GET "/my/foo/:id" [id] "foo!")))
 	;=> ~'user/x
 
-### `(url-for routes action & args)`
+### url-for
 
 Returns a pair *[method url-string]* with the url specified by *routes*, *action*
 and any arguments the url needs. *routes* must be defined
